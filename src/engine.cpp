@@ -106,7 +106,7 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
 
     options.add("DepthAvgWeight", Option(50, 0, 100));
   
-    options.add("DepthAvgGate", Option(0, 0, 1024));
+    options.add("DepthAvgGate", Option(1024, 0, 1024));
 
     options.add("Skill Level", Option(20, 0, 20));
 

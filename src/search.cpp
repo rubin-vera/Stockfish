@@ -643,11 +643,6 @@ bool Search::Worker::iterative_deepening() {
         iterIdx                        = (iterIdx + 1) & 3;
     }
 
-    if (!mainThread)
-        return false;
-
-    mainThread->previousTimeReduction = timeReduction;
-
       // Rank available exact current scores once, at search exit.
     const int weight = options["DepthAvgWeight"];
     const int gate   = options["DepthAvgGate"];
@@ -697,6 +692,12 @@ bool Search::Worker::iterative_deepening() {
             }
         }
     }
+
+    if (!mainThread)
+        return false;
+
+    mainThread->previousTimeReduction = timeReduction;
+
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())

@@ -151,6 +151,11 @@ struct RootMove {
         return m.score != score ? m.score < score : m.previousScore < previousScore;
     }
 
+    // Historical returns may include bounds or reduced-search estimates
+    Value depthAvgReturn   = -VALUE_INFINITE;
+    Value depthAvgPrevious = -VALUE_INFINITE;
+    int   depthAvgIteration = 0;
+
     u64         effort           = 0;
     Value       score            = -VALUE_INFINITE;
     Value       previousScore    = -VALUE_INFINITE;

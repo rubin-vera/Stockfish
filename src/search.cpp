@@ -335,6 +335,8 @@ bool Search::Worker::iterative_deepening() {
     int  searchAgainCounter = 0;
     int  failHighRecovery   = 0;
     bool uciPvSent          = false;
+    bool depthAvgRecovered = false;
+  
 
     lowPlyHistory.fill(102);
 
@@ -356,6 +358,9 @@ bool Search::Worker::iterative_deepening() {
         // all the move scores except the (new) PV are set to -VALUE_INFINITE.
         for (usize i = 0; i < rootMoves.size(); ++i)
         {
+            rootMoves[i].depthAvgPrevious = rootMoves[i].depthAvgReturn;
+            rootMoves[i].depthAvgReturn = -VALUE_INFINITE;
+            rootMoves[i].depthAvgIteration = 0;
             rootMoves[i].previousScore      = rootMoves[i].score;
             rootMoves[i].previousPV         = rootMoves[i].pv;
             rootMoves[i].previousScoreExact = i < multiPV;
@@ -545,7 +550,9 @@ bool Search::Worker::iterative_deepening() {
         // remaining root-moves. Thus here we roll back to the score from the
         // previous iteration. We do the same if a search has failed to recover
         // a mate score that was found in a previous iteration.
-        if (abortedLossSearch || (rootMoves[0].score != -VALUE_INFINITE && forgottenMate))
+        depthAvgRecovered = abortedLossSearch || (rootMoves[0].score != -VALUE_INFINITE && forgottenMate);
+
+        if (depthAvgRecovered)
         {
             // Bring the last best move to the front for best thread selection
             if (!lastBestMovePV.empty())
@@ -640,6 +647,56 @@ bool Search::Worker::iterative_deepening() {
         return false;
 
     mainThread->previousTimeReduction = timeReduction;
+
+      // Rank available exact current scores once, at search exit.
+    const int weight = options["DepthAvgWeight"];
+    const int gate   = options["DepthAvgGate"];
+
+    if (weight && gate && multiPV == 1 && !skill.enabled()
+        && !depthAvgRecovered && !rootMoves.empty())
+    {
+        const auto eligible = [&](const RootMove& rm) {
+            return rm.depthAvgIteration == rootDepth
+                && rm.score != -VALUE_INFINITE
+                && !rm.is_inexact()
+                && !is_decisive(rm.score);
+        };
+
+        const auto blended = [&](const RootMove& rm) -> i64 {
+            const Value previous = rm.depthAvgPrevious;
+
+            if (previous == -VALUE_INFINITE || is_decisive(previous)
+                || std::abs(previous - rm.score) > gate)
+                return i64(100) * rm.score;
+
+            return i64(100 - weight) * rm.score + i64(weight) * previous;
+        };
+
+        if (eligible(rootMoves[0]))
+        {
+            usize best = 0;
+            i64 bestScore = blended(rootMoves[0]);
+
+            for (usize i = 1; i < rootMoves.size(); ++i)
+                if (rootMoves[i].tbRank == rootMoves[0].tbRank
+                    && eligible(rootMoves[i]))
+                {
+                    const i64 candidate = blended(rootMoves[i]);
+
+                    if (candidate > bestScore)
+                    {
+                        best = i;
+                        bestScore = candidate;
+                    }
+                }
+
+            if (best)
+            {
+                std::swap(rootMoves[0], rootMoves[best]);
+                uciPvSent = false;
+            }
+        }
+    }
 
     // If the skill level is enabled, swap the best PV line with the sub-optimal one
     if (skill.enabled())
@@ -1468,6 +1525,8 @@ moves_loop:  // When in check, search starts here
         if (rootNode)
         {
             RootMove& rm = *std::find(rootMoves.begin(), rootMoves.end(), move);
+            rm.depthAvgReturn = value;
+            rm.depthAvgIteration = rootDepth;
 
             rm.effort += nodes - nodeCount;
 

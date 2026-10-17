@@ -104,6 +104,10 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
     options.add(  //
       "MultiPV", Option(1, 1, MAX_MOVES));
 
+    options.add("DepthAvgWeight", Option(50, 0, 100));
+  
+    options.add("DepthAvgGate", Option(0, 0, 1024));
+
     options.add("Skill Level", Option(20, 0, 20));
 
     options.add("Move Overhead", Option(10, 0, 5000));

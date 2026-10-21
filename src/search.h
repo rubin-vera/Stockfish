@@ -145,6 +145,12 @@ struct RootMove {
         return score != -VALUE_INFINITE && is_loss(score) && !is_inexact();
     }
     void unset_inexact() { inexactLower = inexactUpper = false; }
+    Value depth_average_score() const {
+        // Keep the sum to avoid rounding ties; change these weights to tune the blend.
+        constexpr int CurrentWeight = 1, PreviousWeight = 1;
+        Value previous = is_decisive(previousIterationScore) ? score : previousIterationScore;
+        return CurrentWeight * score + PreviousWeight * previous;
+    }
     bool operator==(const Move& m) const { return pv[0] == m; }
     // Sort in descending order
     bool operator<(const RootMove& m) const {
@@ -154,6 +160,8 @@ struct RootMove {
     u64         effort           = 0;
     Value       score            = -VALUE_INFINITE;
     Value       previousScore    = -VALUE_INFINITE;
+    Value       iterationScore         = -VALUE_INFINITE;
+    Value       previousIterationScore = -VALUE_INFINITE;
     Value       averageScore     = -VALUE_INFINITE;
     Value       meanSquaredScore = -VALUE_INFINITE * VALUE_INFINITE;
     Value       uciScore         = -VALUE_INFINITE;

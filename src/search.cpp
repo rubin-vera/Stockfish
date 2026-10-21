@@ -288,6 +288,8 @@ bool Search::Worker::iterative_deepening() {
     RootPVMoves lastBestMovePV;
     Depth       lastBestMoveDepth = 0;
     Value       lastBestMoveScore = -VALUE_INFINITE;
+    RootMove depthAverageBest(Move::none());
+    Depth    depthAverageDepth = 0;
 
     Value  alpha, beta;
     Value  bestValue     = -VALUE_INFINITE;
@@ -359,6 +361,8 @@ bool Search::Worker::iterative_deepening() {
             rootMoves[i].previousScore      = rootMoves[i].score;
             rootMoves[i].previousPV         = rootMoves[i].pv;
             rootMoves[i].previousScoreExact = i < multiPV;
+            rootMoves[i].previousIterationScore = rootMoves[i].iterationScore;
+            rootMoves[i].iterationScore         = -VALUE_INFINITE;
         }
 
         usize pvFirst = pvLast = 0;
@@ -564,6 +568,20 @@ bool Search::Worker::iterative_deepening() {
                 rootMoves[0].inexactLower = true;
         }
 
+        // Save the blended choice only after a completed single-PV iteration.
+        // Current scores must be exact; previous returns can be PVS bounds.
+        if (!threads.stop && multiPV == 1 && !skill.enabled())
+        {
+            depthAverageBest  = rootMoves[0];
+            depthAverageDepth = rootDepth;
+            if (!is_decisive(depthAverageBest.score) && !depthAverageBest.is_inexact())
+                for (const auto& rm : rootMoves)
+                    if (rm.tbRank == depthAverageBest.tbRank && !is_decisive(rm.score)
+                        && !rm.is_inexact()
+                        && rm.depth_average_score() > depthAverageBest.depth_average_score())
+                        depthAverageBest = rm;
+        }
+
         // Have we found a "mate in x" after a completed iteration?
         if (limits.mate && !threads.stop && is_mate_or_mated(rootMoves[0].score)
             && VALUE_MATE - std::abs(rootMoves[0].score) <= 2 * limits.mate)
@@ -634,6 +652,18 @@ bool Search::Worker::iterative_deepening() {
 
         mainThread->iterValue[iterIdx] = bestValue;
         iterIdx                        = (iterIdx + 1) & 3;
+    }
+
+     // Keep the search itself unchanged. Select from the last completed iteration,
+    // preserving any decisive result recovered by the normal search safeguards.
+    if (depthAverageDepth && !is_decisive(rootMoves[0].score))
+    {
+        Utility::move_to_front(rootMoves, [&depthAverageBest](const auto& rm) {
+            return rm == depthAverageBest.pv[0];
+        });
+        rootMoves[0] = depthAverageBest;
+        rootDepth    = depthAverageDepth;
+        uciPvSent    = false;
     }
 
     if (!mainThread)
@@ -1468,6 +1498,8 @@ moves_loop:  // When in check, search starts here
         if (rootNode)
         {
             RootMove& rm = *std::find(rootMoves.begin(), rootMoves.end(), move);
+            // Preserve the return even when ordinary root sorting discards it.
+            rm.iterationScore = value;
 
             rm.effort += nodes - nodeCount;
 

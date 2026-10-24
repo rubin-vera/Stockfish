@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 3,
+  "branch": "bench/b05-03-no-enemy-slider-blockers",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Skip king blocker rays without enemy sliders",
+  "hypothesis": "Avoid pseudoattack mask loads and occupancy work in slider-free endgames.",
+  "area": "king-blockers",
+  "source_paths": [
+    "src/position.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

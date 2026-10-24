@@ -228,7 +228,8 @@ class ValueList {
 
    private:
     T     values_[MaxSize];
-    usize size_ = 0;
+    static_assert(MaxSize <= 0xffffffffu);
+    u32 size_ = 0;
 };
 
 

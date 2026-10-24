@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 15,
+  "branch": "bench/b05-15-fc2-even-odd-chains",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Split the final dot product into even and odd chains",
+  "hypothesis": "Hide dot-product latency without changing vector width, layout or horizontal reduction.",
+  "area": "nnue-fc2",
+  "source_paths": [
+    "src/nnue/layers/affine_transform.h"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

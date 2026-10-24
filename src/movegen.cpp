@@ -53,6 +53,8 @@ inline Move* splat_pawn_moves(Move* moveList, Bitboard to_bb) {
 
 inline Move* splat_moves(Move* moveList, Square from, Bitboard to_bb) {
     assert(popcount(to_bb) <= 32);  // Q can attack up to 27 squares
+    if (!to_bb)
+        return moveList;
 
     const __m512i fromVec = _mm512_set1_epi16(Move(from, SQUARE_ZERO).raw());
     const __m512i toSquares =

@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 6,
+  "branch": "bench/b05-06-empty-piece-splat",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Skip empty non-pawn SIMD move emission",
+  "hypothesis": "Avoid compression, widening and a 64-byte scratch store when a piece has no target squares.",
+  "area": "move-emission",
+  "source_paths": [
+    "src/movegen.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

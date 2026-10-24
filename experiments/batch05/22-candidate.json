@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 22,
+  "branch": "bench/b05-22-pp-single-partner",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Use scalar indexing for single-partner AVX512 pawn changes",
+  "hypothesis": "Avoid byte compression and a full vector store for a single pawn-pair feature.",
+  "area": "nnue-pawn-pairs",
+  "source_paths": [
+    "src/nnue/features/pp_3wide.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

@@ -129,6 +129,14 @@ void PP_3Wide::append_changed_indices(Color                                    p
             const int      n        = popcount(partners);
             if (!n)
                 continue;
+            if (n == 1)
+            {
+                const Square b = lsb(partners);
+                const Color ac = (pawnsB & a) ? BLACK : WHITE;
+                const Color bc = (pawnsB & b) ? BLACK : WHITE;
+                out.push_back(make_index(perspective, ac, a, b, bc, ksq));
+                continue;
+            }
 
             const u16     colorOff = (enemy & a) ? 48 : 0;
             const u16     aId      = u16(((u8(a) ^ orientation) - 8) + colorOff);

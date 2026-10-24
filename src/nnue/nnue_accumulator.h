@@ -59,16 +59,16 @@ struct AccumulatorCaches {
     }
 
     struct alignas(CacheLineSize) Entry {
-        std::array<BiasType, L1>     accumulation;
         std::array<Piece, SQUARE_NB> pieces;
         Bitboard                     pieceBB;
+        alignas(CacheLineSize) std::array<BiasType, L1> accumulation;
 
         // To initialize a refresh entry, we set all its bitboards empty,
         // so we put the biases in the accumulation, without any weights on top
         void clear(const std::array<BiasType, L1>& biases) {
             accumulation = biases;
-            std::memset(reinterpret_cast<std::byte*>(this) + offsetof(Entry, pieces), 0,
-                        sizeof(Entry) - offsetof(Entry, pieces));
+            pieces.fill(NO_PIECE);
+            pieceBB = 0;
         }
     };
 

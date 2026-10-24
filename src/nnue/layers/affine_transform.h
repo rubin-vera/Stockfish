@@ -273,8 +273,17 @@ class AffineTransform {
     #if defined(USE_VNNI) || defined(USE_NEON_DOTPROD)
             for (; i < NumChunks; i += 2)
             {
+    #if defined(USE_AVX2)
+                const i32 raw0 = load_as<i32>(input + i * sizeof(i32));
+                const i32 raw1 = load_as<i32>(input + (i + 1) * sizeof(i32));
+                if (!(raw0 | raw1))
+                    continue;
+                const vec_t in0 = vec_set_32(raw0);
+                const vec_t in1 = vec_set_32(raw1);
+    #else
                 const vec_t in0 = vec_load_32(input + i * sizeof(i32));
                 const vec_t in1 = vec_load_32(input + (i + 1) * sizeof(i32));
+    #endif
                 const auto  col0 =
                   reinterpret_cast<const vec_t*>(&weights[i * OutputDimensions * 4]);
                 const auto col1 =

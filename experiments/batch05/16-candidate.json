@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 16,
+  "branch": "bench/b05-16-fc1-zero-eight",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Skip empty eight-byte groups in the second layer",
+  "hypothesis": "Avoid four dense vector dot products when both activation broadcasts are zero.",
+  "area": "nnue-fc1",
+  "source_paths": [
+    "src/nnue/layers/affine_transform.h"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

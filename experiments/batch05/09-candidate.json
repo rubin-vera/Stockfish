@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 9,
+  "branch": "bench/b05-09-lmr-divisor-lut",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Tabulate the exact LMR divisor",
+  "hypothesis": "Replace repeated integer squaring with a tiny read-only table; keep the formula for negative inputs.",
+  "area": "search-lmr",
+  "source_paths": [
+    "src/search.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

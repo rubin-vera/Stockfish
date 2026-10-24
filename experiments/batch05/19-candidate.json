@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 19,
+  "branch": "bench/b05-19-accumulator-fused-scan",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Find both usable accumulator ancestors in one traversal",
+  "hypothesis": "Share ancestor metadata cache lines while preserving each perspective stopping point.",
+  "area": "nnue-ancestor-scan",
+  "source_paths": [
+    "src/nnue/nnue_accumulator.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

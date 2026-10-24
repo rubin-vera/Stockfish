@@ -98,8 +98,24 @@ void AccumulatorStack::evaluate(const Position&           pos,
                                 const FeatureTransformer& featureTransformer,
                                 // Silence spurious warning on GCC 10
                                 [[maybe_unused]] AccumulatorCaches& cache) noexcept {
-    const usize last_white = find_last_usable_accumulator(WHITE);
-    const usize last_black = find_last_usable_accumulator(BLACK);
+    usize last_white = 0, last_black = 0;
+    bool white_done = false, black_done = false;
+    for (usize i = size - 1; i > 0 && !(white_done && black_done); --i)
+    {
+        const auto& state = accumulators[i];
+        if (!white_done && (state.computed[WHITE]
+                            || PSQFeatureSet::requires_refresh(state.dirtyPiece, WHITE)))
+        {
+            last_white = i;
+            white_done = true;
+        }
+        if (!black_done && (state.computed[BLACK]
+                            || PSQFeatureSet::requires_refresh(state.dirtyPiece, BLACK)))
+        {
+            last_black = i;
+            black_done = true;
+        }
+    }
 
     if (accumulators[last_white].computed[WHITE] && accumulators[last_black].computed[BLACK])
         forward_update_incremental_both(pos, featureTransformer, last_white, last_black);

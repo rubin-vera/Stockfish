@@ -19,6 +19,7 @@
 #include "movegen.h"
 
 #include <cassert>
+#include <cstring>
 #include <initializer_list>
 
 #include "attacks.h"
@@ -88,6 +89,17 @@ Move* make_promotions(Move* moveList, [[maybe_unused]] Square to) {
 
     constexpr bool          all  = Type == EVASIONS || Type == ALL;
     [[maybe_unused]] Square from = to - D;
+
+    if constexpr (all || (Type == CAPTURES && Enemy))
+    {
+        // Preserve Q, R, B, N order while emitting the four encodings together.
+        const Move promotions[4] = {Move::make<PROMOTION>(from, to, QUEEN),
+                                    Move::make<PROMOTION>(from, to, ROOK),
+                                    Move::make<PROMOTION>(from, to, BISHOP),
+                                    Move::make<PROMOTION>(from, to, KNIGHT)};
+        std::memcpy(moveList, promotions, sizeof(promotions));
+        return moveList + 4;
+    }
 
     if constexpr (Type == CAPTURES || all)
         *moveList++ = Move::make<PROMOTION>(from, to, QUEEN);

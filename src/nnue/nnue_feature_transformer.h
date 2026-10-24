@@ -352,6 +352,15 @@ class FeatureTransformer {
                 vec_t merged = wasm_i8x16_shuffle(low, hi, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21,
                                                   23, 25, 27, 29, 31);
                 vec_t result = wasm_u8x16_shr(merged, 1);
+    #elif defined(USE_AVX512)
+                const vec_t a = vec_max_16(vec_min_16(acc0a, FtMax), Zero);
+                const vec_t b = vec_max_16(vec_min_16(acc0b, FtMax), Zero);
+                const vec_t c = vec_max_16(vec_min_16(acc1a, FtMax), Zero);
+                const vec_t d = vec_max_16(vec_min_16(acc1b, FtMax), Zero);
+                // Products fit unsigned 16-bit lanes: 255 * 255 <= 65535.
+                const vec_t pa = _mm512_srli_epi16(_mm512_mullo_epi16(a, c), 9);
+                const vec_t pb = _mm512_srli_epi16(_mm512_mullo_epi16(b, d), 9);
+                const vec_t result = vec_packus_16(pa, pb);
     #else
                 vec_t sum0a = vec_slli_16(vec_max_16(vec_min_16(acc0a, FtMax), Zero), shift);
                 vec_t sum0b = vec_slli_16(vec_max_16(vec_min_16(acc0b, FtMax), Zero), shift);

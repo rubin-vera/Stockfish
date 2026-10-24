@@ -219,7 +219,7 @@ class Position {
     std::array<Bitboard, COLOR_NB>      byColorBB;
 
     int        pieceCount[PIECE_NB];
-    int        castlingRightsMask[SQUARE_NB];
+    u8         castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
     StateInfo* st;

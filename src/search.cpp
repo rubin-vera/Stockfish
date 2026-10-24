@@ -53,8 +53,15 @@
 namespace Stockfish {
 
 inline int lmr_divisor(int depth) {
-    int d = std::min(depth, 16);
-    return 3000 + 7 * (d - 8) * (d - 8);
+    static constexpr std::array<int, 17> table = [] {
+        std::array<int, 17> values{};
+        for (int i = 0; i <= 16; ++i)
+            values[i] = 3000 + 7 * (i - 8) * (i - 8);
+        return values;
+    }();
+    if (depth >= 0)
+        return table[std::min(depth, 16)];
+    return 3000 + 7 * (depth - 8) * (depth - 8);
 }
 
 namespace TB = Tablebases;
@@ -100,13 +107,16 @@ int correction_value(const Worker& w, const Position& pos, const Stack* const ss
     const int   micv   = shared.minor_piece_correction_entry(pos)[us].minor;
     const int   wnpcv  = shared.nonpawn_correction_entry<WHITE>(pos)[us].nonPawnWhite;
     const int   bnpcv  = shared.nonpawn_correction_entry<BLACK>(pos)[us].nonPawnBlack;
-    const int   cntcv =
-      m.is_ok()
-          ? 7885
-              * ((*(ss - 2)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-                 + (*(ss - 4)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()])
-            + 6307 * (*(ss - 6)->continuationCorrectionHistory)[pos.piece_on(m.to_sq())][m.to_sq()]
-          : 80695;
+    int cntcv = 80695;
+    if (m.is_ok())
+    {
+        const Square to = m.to_sq();
+        const Piece pc = pos.piece_on(to);
+        const int recent = (*(ss - 2)->continuationCorrectionHistory)[pc][to];
+        const int older = (*(ss - 4)->continuationCorrectionHistory)[pc][to];
+        const int oldest = (*(ss - 6)->continuationCorrectionHistory)[pc][to];
+        cntcv = 7885 * (recent + older) + 6307 * oldest;
+    }
 
     return 13806 * pcv + 9512 * micv + 11615 * (wnpcv + bnpcv) + cntcv;
 }
@@ -163,9 +173,9 @@ void update_all_stats(const Position& pos,
 // Detect shuffling moves in order to limit search explosions. This code was
 // added in #6447 as non-regression, and so its parameters should not be tuned.
 bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
-    if (pos.capture_stage(move) || pos.rule50_count() < 10)
+    if (ss->ply < 20 || pos.rule50_count() < 10 || pos.state()->pliesFromNull < 6)
         return false;
-    if (pos.state()->pliesFromNull < 6 || ss->ply < 20)
+    if (pos.capture_stage(move))
         return false;
     return move.from_sq() == (ss - 2)->currentMove.to_sq()
         && (ss - 2)->currentMove.from_sq() == (ss - 4)->currentMove.to_sq();
@@ -2076,14 +2086,16 @@ void update_quiet_histories(
   const Position& pos, Stack* ss, Search::Worker& workerThread, Move move, int bonus) {
 
     Color us = pos.side_to_move();
+    const Piece pc = pos.moved_piece(move);
+    const Square to = move.to_sq();
     workerThread.mainHistory[us][move.raw()] << bonus;  // Untuned to prevent duplicate effort
 
     if (ss->ply < LOW_PLY_HISTORY_SIZE)
         workerThread.lowPlyHistory[ss->ply][move.raw()] << bonus * 712 / 1024;
 
-    update_continuation_histories(ss, pos.moved_piece(move), move.to_sq(), bonus * 750 / 1024);
+    update_continuation_histories(ss, pc, to, bonus * 750 / 1024);
 
-    workerThread.sharedHistory.pawn_entry(pos)[pos.moved_piece(move)][move.to_sq()]
+    workerThread.sharedHistory.pawn_entry(pos)[pc][to]
       << bonus * (bonus > -4 ? 1104 : 459) / 1024;
 }
 }

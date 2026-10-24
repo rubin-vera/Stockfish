@@ -198,10 +198,8 @@ void FullThreats::append_changed_indices(Color                   perspective,
             prefetch<PrefetchRw::READ, PrefetchLoc::LOW>(reinterpret_cast<const void*>(
               reinterpret_cast<uintptr_t>(prefetchBase) + uintptr_t(index) * prefetchStride));
 
-        if (raw >> 31)
-            added.push_back_if_lt(index, Dimensions);
-        else
-            removed.push_back_if_lt(index, Dimensions);
+        auto& output = raw >> 31 ? added : removed;
+        output.push_back_if_lt(index, Dimensions);
     }
 }
 
@@ -242,16 +240,10 @@ void FullThreats::append_changed_indices_both(Square                  white_ksq,
               reinterpret_cast<uintptr_t>(prefetchBase) + uintptr_t(black_index) * prefetchStride));
         }
 
-        if (raw >> 31)
-        {
-            white_added.push_back_if_lt(white_index, Dimensions);
-            black_added.push_back_if_lt(black_index, Dimensions);
-        }
-        else
-        {
-            white_removed.push_back_if_lt(white_index, Dimensions);
-            black_removed.push_back_if_lt(black_index, Dimensions);
-        }
+        auto& white_out = raw >> 31 ? white_added : white_removed;
+        auto& black_out = raw >> 31 ? black_added : black_removed;
+        white_out.push_back_if_lt(white_index, Dimensions);
+        black_out.push_back_if_lt(black_index, Dimensions);
     }
 }
 

@@ -631,6 +631,9 @@ void Position::update_slider_blockers(Color c) const {
     st->blockersForKing[c] = 0;
     st->pinners[~c]        = 0;
 
+    if (!(pieces(~c) & pieces(BISHOP, ROOK, QUEEN)))
+        return;
+
     // Snipers are sliders that attack 's' when a piece and other snipers are removed
     Bitboard snipers = ((attacks_bb(ROOK, ksq) & pieces(QUEEN, ROOK))
                         | (attacks_bb(BISHOP, ksq) & pieces(QUEEN, BISHOP)))
@@ -734,21 +737,9 @@ bool Position::legal(Move m) const {
 
 
 // Tests whether a legal move gives a check
-bool Position::gives_check(Move m) const {
-
-    assert(m.is_ok());
-    assert(color_of(moved_piece(m)) == sideToMove);
-
+bool Position::gives_check_special(Move m) const {
     Square from = m.from_sq();
-    Square to   = m.to_sq();
-
-    // Is there a direct check?
-    if (check_squares(type_of(piece_on(from))) & to)
-        return true;
-
-    // Is there a discovered check?
-    if (blockers_for_king(~sideToMove) & from)
-        return !(line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;
+    Square to = m.to_sq();
 
     switch (m.type_of())
     {
@@ -1061,6 +1052,18 @@ void Position::undo_move(Move m) {
     assert(empty(from) || m.type_of() == CASTLING);
     assert(type_of(st->capturedPiece) != KING);
 
+    // Normal moves need neither promotion decoding nor castling dispatch.
+    if (m.type_of() == NORMAL)
+    {
+        move_piece(to, from);
+        if (st->capturedPiece)
+            put_piece(st->capturedPiece, to);
+        st = st->previous;
+        --gamePly;
+        assert(pos_is_ok());
+        return;
+    }
+
     if (m.type_of() == PROMOTION)
     {
         assert(relative_rank(us, to) == RANK_8);
@@ -1137,8 +1140,9 @@ void write_multiple_dirties(const Position& p,
     __m512i threat_squares = _mm512_maskz_compress_epi8(mask, AllSquares);
     threat_squares         = _mm512_cvtepi8_epi32(_mm512_castsi512_si128(threat_squares));
 
+    const __m512i compact_pieces = _mm512_maskz_compress_epi8(mask, board);
     __m512i threat_pieces =
-      _mm512_maskz_permutexvar_epi8(0x1111111111111111ULL, threat_squares, board);
+      _mm512_cvtepu8_epi32(_mm512_castsi512_si128(compact_pieces));
 
     // Shift the piece and square into place
     threat_squares = _mm512_slli_epi32(threat_squares, SqShift);

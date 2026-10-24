@@ -353,11 +353,24 @@ class AffineTransform {
             vec_t               sum0      = vec_setzero();
             const auto          row0      = reinterpret_cast<const vec_t*>(&weights[0]);
 
+    #if defined(USE_AVX2)
+            vec_t sum1 = vec_setzero();
+            int j = 0;
+            for (; j + 1 < int(NumChunks); j += 2)
+            {
+                vec_add_dpbusd_32(sum0, inputVector[j], row0[j]);
+                vec_add_dpbusd_32(sum1, inputVector[j + 1], row0[j + 1]);
+            }
+            if (j < int(NumChunks))
+                vec_add_dpbusd_32(sum0, inputVector[j], row0[j]);
+            sum0 = _mm256_add_epi32(sum0, sum1);
+    #else
             for (int j = 0; j < int(NumChunks); ++j)
             {
                 const vec_t in = inputVector[j];
                 vec_add_dpbusd_32(sum0, in, row0[j]);
             }
+    #endif
             output[0] = vec_hadd(sum0, biases[0]);
 
     #undef vec_setzero

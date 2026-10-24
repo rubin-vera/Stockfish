@@ -213,13 +213,15 @@ class Position {
     template<bool AfterMove = false>
     Key adjust_key50(Key k) const;
 
+    bool gives_check_special(Move m) const;
+
     // Data members
     std::array<Piece, SQUARE_NB>        board;
     std::array<Bitboard, PIECE_TYPE_NB> byTypeBB;
     std::array<Bitboard, COLOR_NB>      byColorBB;
 
-    int        pieceCount[PIECE_NB];
-    int        castlingRightsMask[SQUARE_NB];
+    u8         pieceCount[PIECE_NB];
+    u8         castlingRightsMask[SQUARE_NB];
     Square     castlingRookSquare[CASTLING_RIGHT_NB];
     Bitboard   castlingPath[CASTLING_RIGHT_NB];
     StateInfo* st;
@@ -230,6 +232,25 @@ class Position {
 };
 
 std::ostream& operator<<(std::ostream& os, const Position& pos);
+
+inline bool Position::gives_check(Move m) const {
+
+    assert(m.is_ok());
+    assert(color_of(moved_piece(m)) == sideToMove);
+
+    Square from = m.from_sq();
+    Square to   = m.to_sq();
+
+    // Is there a direct check?
+    if (check_squares(type_of(piece_on(from))) & to)
+        return true;
+
+    // Is there a discovered check?
+    if (blockers_for_king(~sideToMove) & from)
+        return !(Attacks::line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;
+
+    return m.type_of() != NORMAL && gives_check_special(m);
+}
 
 inline Color Position::side_to_move() const { return sideToMove; }
 

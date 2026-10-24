@@ -21,6 +21,10 @@
 
 #include <algorithm>  // IWYU pragma: keep
 
+#if defined(USE_AVX2)
+    #include <immintrin.h>
+#endif
+
 #include "misc.h"
 #include "types.h"
 
@@ -61,7 +65,18 @@ struct MoveList {
     const Move* begin() const { return moveList; }
     const Move* end() const { return last; }
     usize       size() const { return last - moveList; }
-    bool        contains(Move move) const { return std::find(begin(), end(), move) != end(); }
+    bool contains(Move move) const {
+        const Move* p = begin();
+#if defined(USE_AVX2)
+        static_assert(sizeof(Move) == sizeof(u16));
+        const __m256i wanted = _mm256_set1_epi16(move.raw());
+        for (; end() - p >= 16; p += 16)
+            if (_mm256_movemask_epi8(_mm256_cmpeq_epi16(
+                  _mm256_loadu_si256(reinterpret_cast<const __m256i*>(p)), wanted)))
+                return true;
+#endif
+        return std::find(p, end(), move) != end();
+    }
 
    private:
     Move moveList[MAX_MOVES], *last;

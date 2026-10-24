@@ -1,0 +1,139 @@
+{
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "included": [
+    {
+      "number": 1,
+      "branch": "bench/b05-01-piece-count-bytes",
+      "commit": "2f933ae8661193908a92552735a0bf78cd9fe856",
+      "screening_geometric_pct": 0.5888525785700278
+    },
+    {
+      "number": 2,
+      "branch": "bench/b05-02-castle-mask-bytes",
+      "commit": "cc085bbbeea16848ee468c3116570167ad6750c2",
+      "screening_geometric_pct": 0.43733288854512925
+    },
+    {
+      "number": 3,
+      "branch": "bench/b05-03-no-enemy-slider-blockers",
+      "commit": "db976302c17e46a5498cc116e6b2898cfccc33cb",
+      "screening_geometric_pct": 0.6951222220479734
+    },
+    {
+      "number": 4,
+      "branch": "bench/b05-04-inline-check-front",
+      "commit": "c8f8cb8149fad4762dda84750ef3937ab37ae5a7",
+      "screening_geometric_pct": 0.821113906709733
+    },
+    {
+      "number": 5,
+      "branch": "bench/b05-05-undo-normal-front",
+      "commit": "5b690aba52812ef6978cd3d9134559ca124d0642",
+      "screening_geometric_pct": 0.41379208215743396
+    },
+    {
+      "number": 7,
+      "branch": "bench/b05-07-promotion-packed-write",
+      "commit": "da287fc4b94bad46124e9f54c61bf410119aa038",
+      "screening_geometric_pct": 0.4439820397324413
+    },
+    {
+      "number": 8,
+      "branch": "bench/b05-08-move-membership-avx2",
+      "commit": "2a79ecae1d0eda56c3377b32029d2d91a10f5eb4",
+      "screening_geometric_pct": 0.7457888669089103
+    },
+    {
+      "number": 9,
+      "branch": "bench/b05-09-lmr-divisor-lut",
+      "commit": "5b2dffdc0a415c1e668ebaf38e12fd60ba5165de",
+      "screening_geometric_pct": 0.7556614942072356
+    },
+    {
+      "number": 10,
+      "branch": "bench/b05-10-correction-local-indices",
+      "commit": "b08e335d454c9c73bb6f8bf4cdb04d13d8c4af01",
+      "screening_geometric_pct": 0.12283891938188092
+    },
+    {
+      "number": 11,
+      "branch": "bench/b05-11-quiet-update-operands",
+      "commit": "be164bcf4dbac8a1a64c091c770bd30c19fb4f7a",
+      "screening_geometric_pct": 0.6708248362739833
+    },
+    {
+      "number": 12,
+      "branch": "bench/b05-12-shuffling-cheap-gates",
+      "commit": "e88847135ff5b5304537f58f3099c1eca723ea19",
+      "screening_geometric_pct": 0.5813366616970733
+    },
+    {
+      "number": 13,
+      "branch": "bench/b05-13-ft-unsigned-low-product",
+      "commit": "722034f10b044ef79220195477371522f5f94f33",
+      "screening_geometric_pct": 0.43376627244418475
+    },
+    {
+      "number": 14,
+      "branch": "bench/b05-14-nnz-empty-block",
+      "commit": "16e25ce3be2b7a780c73965b4d06a9fea649ac4f",
+      "screening_geometric_pct": 0.6713434220274375
+    },
+    {
+      "number": 15,
+      "branch": "bench/b05-15-fc2-even-odd-chains",
+      "commit": "c71e4cb81e2af7cfe9fc3f997700abd42b9ffcc5",
+      "screening_geometric_pct": 0.5821771503213009
+    },
+    {
+      "number": 17,
+      "branch": "bench/b05-17-fc0-lookahead-prefetch",
+      "commit": "8346053b06ee951712bea9ccbee73a70dda32136",
+      "screening_geometric_pct": 0.42376858639356374
+    },
+    {
+      "number": 18,
+      "branch": "bench/b05-18-network-bucket-prefetch",
+      "commit": "b9c1cb3983b4f95a9a8e7afe81b9f8ef4dfba58d",
+      "screening_geometric_pct": 0.48792736203032383
+    },
+    {
+      "number": 19,
+      "branch": "bench/b05-19-accumulator-fused-scan",
+      "commit": "1489f15d289daf7a1c1ce81cd96205930c275c18",
+      "screening_geometric_pct": 0.9060314753897967
+    },
+    {
+      "number": 20,
+      "branch": "bench/b05-20-next-dirties-prefetch",
+      "commit": "8026b2b525bf1e4bb3842a120031893b2a24287b",
+      "screening_geometric_pct": 0.8692638661629091
+    },
+    {
+      "number": 21,
+      "branch": "bench/b05-21-threat-output-select",
+      "commit": "611b2347e6e67c5babcd06f013996f645f859f8c",
+      "screening_geometric_pct": 0.8383712571556401
+    },
+    {
+      "number": 23,
+      "branch": "bench/b05-23-psq-empty-half",
+      "commit": "1823965f0499d2806910f451657fdbe873f76f93",
+      "screening_geometric_pct": 0.9607754359083504
+    },
+    {
+      "number": 24,
+      "branch": "bench/b05-24-dirty-piece-compress",
+      "commit": "456325c8fefcb06dd455213cd53882f26d4c7347",
+      "screening_geometric_pct": 0.8267287197990655
+    }
+  ],
+  "excluded": [
+    6,
+    16,
+    22
+  ],
+  "composition": "All independent, nonoverlapping source edits applied to the common master snapshot",
+  "validation": "Source composition reviewed; combined engine not built or tested",
+  "performance": "Combined speedup unknown"
+}

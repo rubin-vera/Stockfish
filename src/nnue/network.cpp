@@ -155,6 +155,7 @@ Value Network::evaluate(const Position&    pos,
     const int   queenBucket = (pos.pieces(stm, QUEEN) ? 2 : 0) | (pos.pieces(~stm, QUEEN) ? 1 : 0);
     const int   bucket      = pcBucket * 4 + queenBucket;
 
+    prefetch<PrefetchRw::READ, PrefetchLoc::HIGH>(&network[bucket]);
     featureTransformer.transform(pos, accumulatorStack, cache, transformedFeatures, nnzInfo);
     const auto positional = network[bucket].propagate(transformedFeatures, nnzInfo);
     return static_cast<Value>(positional / OutputScale);

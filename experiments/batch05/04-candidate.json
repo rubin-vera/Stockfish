@@ -1,0 +1,21 @@
+{
+  "batch": "b05",
+  "candidate": 4,
+  "branch": "bench/b05-04-inline-check-front",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Inline the direct and discovered check front end",
+  "hypothesis": "Expose common check detection to search while keeping special-move dispatch out of line.",
+  "area": "gives-check",
+  "source_paths": [
+    "src/position.cpp",
+    "src/position.h"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

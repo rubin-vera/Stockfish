@@ -734,21 +734,9 @@ bool Position::legal(Move m) const {
 
 
 // Tests whether a legal move gives a check
-bool Position::gives_check(Move m) const {
-
-    assert(m.is_ok());
-    assert(color_of(moved_piece(m)) == sideToMove);
-
+bool Position::gives_check_special(Move m) const {
     Square from = m.from_sq();
-    Square to   = m.to_sq();
-
-    // Is there a direct check?
-    if (check_squares(type_of(piece_on(from))) & to)
-        return true;
-
-    // Is there a discovered check?
-    if (blockers_for_king(~sideToMove) & from)
-        return !(line_bb(from, to) & pieces(~sideToMove, KING)) || m.type_of() == CASTLING;
+    Square to = m.to_sq();
 
     switch (m.type_of())
     {

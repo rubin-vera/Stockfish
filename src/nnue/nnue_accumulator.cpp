@@ -519,6 +519,18 @@ sf_always_inline Tile apply_combined_features(IndexType                         
     return apply_features<sign>(j, acc, thr.begin() + thrBegin, thr.ssize() - thrBegin, thrWeights);
 }
 
+// Fetch the start of the next weight tile before processing the first tile.
+template<typename IndexList>
+void prefetch_next_tile([[maybe_unused]] const IndexList& list,
+                        [[maybe_unused]] const i8* weights) {
+#if defined(USE_AVX512)
+    if constexpr (Tiling::TileHeight < Dimensions)
+        for (int i = 0; i < list.ssize(); ++i)
+            prefetch<PrefetchRw::READ, PrefetchLoc::HIGH>(
+              weights + usize(list[i]) * Dimensions + Tiling::TileHeight);
+#endif
+}
+
 void apply_combined(Color                              perspective,
                     const FeatureTransformer&          featureTransformer,
                     const AccumulatorState&            from,
@@ -530,6 +542,11 @@ void apply_combined(Color                              perspective,
 
     const auto& fromAcc = from.accumulation[perspective];
     auto&       toAcc   = to.accumulation[perspective];
+
+    prefetch_next_tile(psqRemoved, featureTransformer.weights.data());
+    prefetch_next_tile(thrRemoved, featureTransformer.threatAndPpWeights.data());
+    prefetch_next_tile(psqAdded, featureTransformer.weights.data());
+    prefetch_next_tile(thrAdded, featureTransformer.threatAndPpWeights.data());
 
     Tile acc;
 
@@ -841,6 +858,13 @@ void update_accumulator_hybrid(Color                     perspective,
     const auto& fromAcc = computed.accumulation[perspective];
     auto&       toAcc   = target.accumulation[perspective];
 
+    prefetch_next_tile(newRemove, featureTransformer.weights.data());
+    prefetch_next_tile(newAdd, featureTransformer.weights.data());
+    prefetch_next_tile(oldRemove, featureTransformer.weights.data());
+    prefetch_next_tile(thrAdded, featureTransformer.threatAndPpWeights.data());
+    prefetch_next_tile(oldAdd, featureTransformer.weights.data());
+    prefetch_next_tile(thrRemoved, featureTransformer.threatAndPpWeights.data());
+
     Tile acc;
 
     for (IndexType j = 0; j < Dimensions; increment_index(j))
@@ -897,6 +921,10 @@ void update_accumulator_refresh_cache(Color                     perspective,
     PairFeatureSet::append_active_indices(perspective, pos, active);
 
     accumulator.computed[perspective] = true;
+
+    prefetch_next_tile(removed, featureTransformer.weights.data());
+    prefetch_next_tile(added, featureTransformer.weights.data());
+    prefetch_next_tile(active, featureTransformer.threatAndPpWeights.data());
 
     Tile acc;
 

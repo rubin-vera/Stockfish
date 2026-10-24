@@ -1374,6 +1374,8 @@ bool Position::see_ge(Move m, int threshold) const {
     Bitboard occupied  = pieces() ^ from ^ to;  // xoring to is important for pinned piece logic
     Color    stm       = sideToMove;
     Bitboard attackers = attackers_to(to, occupied);
+    const Bitboard diagonalSliders = pieces(BISHOP, QUEEN);
+    const Bitboard orthogonalSliders = pieces(ROOK, QUEEN);
     Bitboard stmAttackers, bb;
     int      res = 1;
 
@@ -1406,7 +1408,7 @@ bool Position::see_ge(Move m, int threshold) const {
                 break;
             occupied ^= least_significant_square_bb(bb);
 
-            attackers |= attacks_bb(BISHOP, to, occupied) & pieces(BISHOP, QUEEN);
+            attackers |= attacks_bb(BISHOP, to, occupied) & diagonalSliders;
         }
 
         else if ((bb = stmAttackers & pieces(KNIGHT)))
@@ -1422,7 +1424,7 @@ bool Position::see_ge(Move m, int threshold) const {
                 break;
             occupied ^= least_significant_square_bb(bb);
 
-            attackers |= attacks_bb(BISHOP, to, occupied) & pieces(BISHOP, QUEEN);
+            attackers |= attacks_bb(BISHOP, to, occupied) & diagonalSliders;
         }
 
         else if ((bb = stmAttackers & pieces(ROOK)))
@@ -1431,7 +1433,7 @@ bool Position::see_ge(Move m, int threshold) const {
                 break;
             occupied ^= least_significant_square_bb(bb);
 
-            attackers |= attacks_bb(ROOK, to, occupied) & pieces(ROOK, QUEEN);
+            attackers |= attacks_bb(ROOK, to, occupied) & orthogonalSliders;
         }
 
         else if ((bb = stmAttackers & pieces(QUEEN)))
@@ -1443,7 +1445,7 @@ bool Position::see_ge(Move m, int threshold) const {
 
             const auto [bishopAttacks, rookAttacks] = both_attacks_bb(to, occupied);
             attackers |=
-              (bishopAttacks & pieces(BISHOP, QUEEN)) | (rookAttacks & pieces(ROOK, QUEEN));
+              (bishopAttacks & diagonalSliders) | (rookAttacks & orthogonalSliders);
         }
 
         else  // KING

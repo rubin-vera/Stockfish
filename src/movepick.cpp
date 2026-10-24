@@ -203,6 +203,9 @@ ExtMove* MovePicker::generate_and_score() {
 
     MoveList<Type> ml(pos);  // move generation
 
+    // The pawn-history bucket is constant while scoring this move list.
+    const auto* pawnHistoryEntry = Type == QUIETS ? &sharedHistory->pawn_entry(pos) : nullptr;
+
     ExtMove* it = cur;
     for (auto move : ml)
     {
@@ -225,7 +228,7 @@ ExtMove* MovePicker::generate_and_score() {
 
             // histories
             int value = 2 * (*mainHistory)[us][m.raw()];
-            value += 2 * sharedHistory->pawn_entry(pos)[pc][to];
+            value += 2 * (*pawnHistoryEntry)[pc][to];
             value += (*continuationHistory[0])[pc][to];
             value += (*continuationHistory[1])[pc][to];
             value += (*continuationHistory[2])[pc][to];

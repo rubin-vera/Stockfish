@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 21,
+  "branch": "bench/b05-21-threat-output-select",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Select dirty-threat output lists before appending",
+  "hypothesis": "Turn add/remove control flow into address selection while keeping list order.",
+  "area": "nnue-threat-indices",
+  "source_paths": [
+    "src/nnue/features/full_threats.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

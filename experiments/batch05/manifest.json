@@ -1,0 +1,347 @@
+{
+  "batch": "b05",
+  "repository": "rubin-vera/Stockfish",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "baseline_branch": "bench/b05-base",
+  "count": 24,
+  "validation_status": "Source review and provenance verification only. No builds, correctness tests or benchmarks run.",
+  "candidates": [
+    {
+      "number": 1,
+      "branch": "bench/b05-01-piece-count-bytes",
+      "title": "Store board piece counts in bytes",
+      "hypothesis": "Smaller Position working set may reduce L1 pressure; all counts are bounded by board size.",
+      "area": "board-storage",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "2f933ae8661193908a92552735a0bf78cd9fe856",
+      "tree": "0182fdb4c1f328418db8baadf63e2f7ffdb27b25",
+      "source_paths": [
+        "src/position.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/2f933ae8661193908a92552735a0bf78cd9fe856.patch"
+    },
+    {
+      "number": 2,
+      "branch": "bench/b05-02-castle-mask-bytes",
+      "title": "Store per-square castling masks in bytes",
+      "hypothesis": "Castling masks only need four bits; compact metadata reduces the board object footprint.",
+      "area": "board-storage",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "cc085bbbeea16848ee468c3116570167ad6750c2",
+      "tree": "10fe86e71d6d3793b7776084dfc06c94821d71e7",
+      "source_paths": [
+        "src/position.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/cc085bbbeea16848ee468c3116570167ad6750c2.patch"
+    },
+    {
+      "number": 3,
+      "branch": "bench/b05-03-no-enemy-slider-blockers",
+      "title": "Skip king blocker rays without enemy sliders",
+      "hypothesis": "Avoid pseudoattack mask loads and occupancy work in slider-free endgames.",
+      "area": "king-blockers",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "db976302c17e46a5498cc116e6b2898cfccc33cb",
+      "tree": "c3c50378dc3defd29b723b29a4f2c947b995ac3c",
+      "source_paths": [
+        "src/position.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/db976302c17e46a5498cc116e6b2898cfccc33cb.patch"
+    },
+    {
+      "number": 4,
+      "branch": "bench/b05-04-inline-check-front",
+      "title": "Inline the direct and discovered check front end",
+      "hypothesis": "Expose common check detection to search while keeping special-move dispatch out of line.",
+      "area": "gives-check",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "c8f8cb8149fad4762dda84750ef3937ab37ae5a7",
+      "tree": "38e9e671e334623a012de47a6aa5f3ac21a3d453",
+      "source_paths": [
+        "src/position.cpp",
+        "src/position.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/c8f8cb8149fad4762dda84750ef3937ab37ae5a7.patch"
+    },
+    {
+      "number": 5,
+      "branch": "bench/b05-05-undo-normal-front",
+      "title": "Give ordinary move undo a direct path",
+      "hypothesis": "Reduce special-move branches on the return edge of most search nodes.",
+      "area": "undo",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "5b690aba52812ef6978cd3d9134559ca124d0642",
+      "tree": "00c2c594ba6f41e5920587d270b74d6274508286",
+      "source_paths": [
+        "src/position.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/5b690aba52812ef6978cd3d9134559ca124d0642.patch"
+    },
+    {
+      "number": 6,
+      "branch": "bench/b05-06-empty-piece-splat",
+      "title": "Skip empty non-pawn SIMD move emission",
+      "hypothesis": "Avoid compression, widening and a 64-byte scratch store when a piece has no target squares.",
+      "area": "move-emission",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "012e062df821827669bc075060faeb97a29f8616",
+      "tree": "8246c9ae83222c50a846b0f3d783a8d6ca7861da",
+      "source_paths": [
+        "src/movegen.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/012e062df821827669bc075060faeb97a29f8616.patch"
+    },
+    {
+      "number": 7,
+      "branch": "bench/b05-07-promotion-packed-write",
+      "title": "Emit full promotion sets as one small copy",
+      "hypothesis": "Let the compiler combine four scalar stores without changing promotion ordering.",
+      "area": "promotions",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "da287fc4b94bad46124e9f54c61bf410119aa038",
+      "tree": "f35f02332a78facb1f457c02d8bc0ed6fab6d200",
+      "source_paths": [
+        "src/movegen.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/da287fc4b94bad46124e9f54c61bf410119aa038.patch"
+    },
+    {
+      "number": 8,
+      "branch": "bench/b05-08-move-membership-avx2",
+      "title": "Search generated move membership sixteen moves at a time",
+      "hypothesis": "Use bounded vector loads for uncommon TT move validation lists; retain the scalar tail.",
+      "area": "move-membership",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "2a79ecae1d0eda56c3377b32029d2d91a10f5eb4",
+      "tree": "fbe550e2bfa9c45221f768ae80607caabc5dc3e6",
+      "source_paths": [
+        "src/movegen.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/2a79ecae1d0eda56c3377b32029d2d91a10f5eb4.patch"
+    },
+    {
+      "number": 9,
+      "branch": "bench/b05-09-lmr-divisor-lut",
+      "title": "Tabulate the exact LMR divisor",
+      "hypothesis": "Replace repeated integer squaring with a tiny read-only table; keep the formula for negative inputs.",
+      "area": "search-lmr",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "5b2dffdc0a415c1e668ebaf38e12fd60ba5165de",
+      "tree": "5b17d7f273ac70a97e181f337806e5429502f01b",
+      "source_paths": [
+        "src/search.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/5b2dffdc0a415c1e668ebaf38e12fd60ba5165de.patch"
+    },
+    {
+      "number": 10,
+      "branch": "bench/b05-10-correction-local-indices",
+      "title": "Reuse continuation-correction piece and square indices",
+      "hypothesis": "Give the compiler explicit common addresses and independent history loads.",
+      "area": "search-correction",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "b08e335d454c9c73bb6f8bf4cdb04d13d8c4af01",
+      "tree": "ad2586b38255c9b19857764cfbc92ca4fdf98f3d",
+      "source_paths": [
+        "src/search.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/b08e335d454c9c73bb6f8bf4cdb04d13d8c4af01.patch"
+    },
+    {
+      "number": 11,
+      "branch": "bench/b05-11-quiet-update-operands",
+      "title": "Keep quiet-history operands across the continuation call",
+      "hypothesis": "Avoid decoding the move and rereading the board after a helper call.",
+      "area": "search-quiet-update",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "be164bcf4dbac8a1a64c091c770bd30c19fb4f7a",
+      "tree": "00fdcbf14f076ecb394e2bf1dc63cfce3899b230",
+      "source_paths": [
+        "src/search.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/be164bcf4dbac8a1a64c091c770bd30c19fb4f7a.patch"
+    },
+    {
+      "number": 12,
+      "branch": "bench/b05-12-shuffling-cheap-gates",
+      "title": "Check cheap shuffling gates before board capture state",
+      "hypothesis": "Reject shallow and low-rule50 nodes before inspecting destination occupancy.",
+      "area": "search-shuffling",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "e88847135ff5b5304537f58f3099c1eca723ea19",
+      "tree": "1c7e863621d82e719ddffc98bc288a604aaed10d",
+      "source_paths": [
+        "src/search.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/e88847135ff5b5304537f58f3099c1eca723ea19.patch"
+    },
+    {
+      "number": 13,
+      "branch": "bench/b05-13-ft-unsigned-low-product",
+      "title": "Use unsigned low products for AVX512 feature activation",
+      "hypothesis": "Trade signed multiply-high and preshifts for full clipping, multiply-low and logical shifts.",
+      "area": "nnue-transform",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "722034f10b044ef79220195477371522f5f94f33",
+      "tree": "41116acece05338de78a08480db82942645ac5e3",
+      "source_paths": [
+        "src/nnue/nnue_feature_transformer.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/722034f10b044ef79220195477371522f5f94f33.patch"
+    },
+    {
+      "number": 14,
+      "branch": "bench/b05-14-nnz-empty-block",
+      "title": "Skip NNZ compaction and stores for empty blocks",
+      "hypothesis": "Keep index progression but avoid compress and scratch traffic when all 32 chunks are zero.",
+      "area": "nnue-nnz",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "16e25ce3be2b7a780c73965b4d06a9fea649ac4f",
+      "tree": "521ef25e689f20196c3d4d94f8833ba8eb6965c3",
+      "source_paths": [
+        "src/nnue/nnz_helper.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/16e25ce3be2b7a780c73965b4d06a9fea649ac4f.patch"
+    },
+    {
+      "number": 15,
+      "branch": "bench/b05-15-fc2-even-odd-chains",
+      "title": "Split the final dot product into even and odd chains",
+      "hypothesis": "Hide dot-product latency without changing vector width, layout or horizontal reduction.",
+      "area": "nnue-fc2",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "c71e4cb81e2af7cfe9fc3f997700abd42b9ffcc5",
+      "tree": "a66deccfbe947baa71f3b37a59991c266b1314f8",
+      "source_paths": [
+        "src/nnue/layers/affine_transform.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/c71e4cb81e2af7cfe9fc3f997700abd42b9ffcc5.patch"
+    },
+    {
+      "number": 16,
+      "branch": "bench/b05-16-fc1-zero-eight",
+      "title": "Skip empty eight-byte groups in the second layer",
+      "hypothesis": "Avoid four dense vector dot products when both activation broadcasts are zero.",
+      "area": "nnue-fc1",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "386ee1d316dd60b11b0d57cffed947bfc063b42a",
+      "tree": "069e52750d60acaa2361b1614334b82c9638cc5a",
+      "source_paths": [
+        "src/nnue/layers/affine_transform.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/386ee1d316dd60b11b0d57cffed947bfc063b42a.patch"
+    },
+    {
+      "number": 17,
+      "branch": "bench/b05-17-fc0-lookahead-prefetch",
+      "title": "Prefetch a future sparse first-layer weight column",
+      "hypothesis": "Overlap a two-group-ahead column fetch with current three-chain VNNI work.",
+      "area": "nnue-fc0",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "8346053b06ee951712bea9ccbee73a70dda32136",
+      "tree": "7b281cecdacd452428928496eae5e30e9ba0077a",
+      "source_paths": [
+        "src/nnue/layers/affine_transform_sparse_input.h"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/8346053b06ee951712bea9ccbee73a70dda32136.patch"
+    },
+    {
+      "number": 18,
+      "branch": "bench/b05-18-network-bucket-prefetch",
+      "title": "Prefetch the selected network before feature transformation",
+      "hypothesis": "Use accumulator evaluation latency to warm the selected first-layer bias cache line.",
+      "area": "nnue-network-dispatch",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "b9c1cb3983b4f95a9a8e7afe81b9f8ef4dfba58d",
+      "tree": "c2bab693404444fc98d4a0d9d69904e228800416",
+      "source_paths": [
+        "src/nnue/network.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/b9c1cb3983b4f95a9a8e7afe81b9f8ef4dfba58d.patch"
+    },
+    {
+      "number": 19,
+      "branch": "bench/b05-19-accumulator-fused-scan",
+      "title": "Find both usable accumulator ancestors in one traversal",
+      "hypothesis": "Share ancestor metadata cache lines while preserving each perspective stopping point.",
+      "area": "nnue-ancestor-scan",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "1489f15d289daf7a1c1ce81cd96205930c275c18",
+      "tree": "58e83d8165232e8df4cd4802b406af8846be6522",
+      "source_paths": [
+        "src/nnue/nnue_accumulator.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/1489f15d289daf7a1c1ce81cd96205930c275c18.patch"
+    },
+    {
+      "number": 20,
+      "branch": "bench/b05-20-next-dirties-prefetch",
+      "title": "Prefetch the next accumulator dirty record for writing",
+      "hypothesis": "Request ownership of the next stack dirty header before descending another search ply.",
+      "area": "nnue-stack-push",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "8026b2b525bf1e4bb3842a120031893b2a24287b",
+      "tree": "75299388a0a4609fc603a2f637a41cbca361e82b",
+      "source_paths": [
+        "src/nnue/nnue_accumulator.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/8026b2b525bf1e4bb3842a120031893b2a24287b.patch"
+    },
+    {
+      "number": 21,
+      "branch": "bench/b05-21-threat-output-select",
+      "title": "Select dirty-threat output lists before appending",
+      "hypothesis": "Turn add/remove control flow into address selection while keeping list order.",
+      "area": "nnue-threat-indices",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "611b2347e6e67c5babcd06f013996f645f859f8c",
+      "tree": "6d7aa4d1a6173ff5a5abde6edcedc28339f13670",
+      "source_paths": [
+        "src/nnue/features/full_threats.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/611b2347e6e67c5babcd06f013996f645f859f8c.patch"
+    },
+    {
+      "number": 22,
+      "branch": "bench/b05-22-pp-single-partner",
+      "title": "Use scalar indexing for single-partner AVX512 pawn changes",
+      "hypothesis": "Avoid byte compression and a full vector store for a single pawn-pair feature.",
+      "area": "nnue-pawn-pairs",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "00386a5c07d0de354116ebf1790f96c4cbaa8099",
+      "tree": "4a4f93a12c41909e42f2a7c9b3762e0f8339ecef",
+      "source_paths": [
+        "src/nnue/features/pp_3wide.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/00386a5c07d0de354116ebf1790f96c4cbaa8099.patch"
+    },
+    {
+      "number": 23,
+      "branch": "bench/b05-23-psq-empty-half",
+      "title": "Skip empty sides of cached PSQ index generation",
+      "hypothesis": "Avoid a board load, two compressions and an output store when an index list has no entries.",
+      "area": "nnue-psq-indices",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "1823965f0499d2806910f451657fdbe873f76f93",
+      "tree": "68c8395e0e216fd86d4d24851d344244c38e4dab",
+      "source_paths": [
+        "src/nnue/features/k32q2.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/1823965f0499d2806910f451657fdbe873f76f93.patch"
+    },
+    {
+      "number": 24,
+      "branch": "bench/b05-24-dirty-piece-compress",
+      "title": "Compact dirty-threat piece bytes directly",
+      "hypothesis": "Replace byte-permute gathering through widened squares with a second byte compression and widening.",
+      "area": "board-threat-emission",
+      "base": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+      "commit": "456325c8fefcb06dd455213cd53882f26d4c7347",
+      "tree": "963add35c054b92ef7fc59f322623bff8a2c5c5e",
+      "source_paths": [
+        "src/position.cpp"
+      ],
+      "patch_url": "https://github.com/rubin-vera/Stockfish/commit/456325c8fefcb06dd455213cd53882f26d4c7347.patch"
+    }
+  ]
+}

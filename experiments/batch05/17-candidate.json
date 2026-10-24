@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 17,
+  "branch": "bench/b05-17-fc0-lookahead-prefetch",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Prefetch a future sparse first-layer weight column",
+  "hypothesis": "Overlap a two-group-ahead column fetch with current three-chain VNNI work.",
+  "area": "nnue-fc0",
+  "source_paths": [
+    "src/nnue/layers/affine_transform_sparse_input.h"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

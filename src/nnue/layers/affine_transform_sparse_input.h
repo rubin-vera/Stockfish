@@ -208,6 +208,9 @@ class AffineTransformSparseInput {
         #if defined(USE_VNNI)
         while (start < end - 2)
         {
+            if (end - start > 6)
+                prefetch<PrefetchRw::READ, PrefetchLoc::HIGH>(
+                  &weights_cp[isize(start[6]) * OutputDimensions * ChunkSize]);
             const isize   i0  = *start++;
             const isize   i1  = *start++;
             const isize   i2  = *start++;

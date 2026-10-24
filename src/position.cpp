@@ -1061,6 +1061,18 @@ void Position::undo_move(Move m) {
     assert(empty(from) || m.type_of() == CASTLING);
     assert(type_of(st->capturedPiece) != KING);
 
+    // Normal moves need neither promotion decoding nor castling dispatch.
+    if (m.type_of() == NORMAL)
+    {
+        move_piece(to, from);
+        if (st->capturedPiece)
+            put_piece(st->capturedPiece, to);
+        st = st->previous;
+        --gamePly;
+        assert(pos_is_ok());
+        return;
+    }
+
     if (m.type_of() == PROMOTION)
     {
         assert(relative_rank(us, to) == RANK_8);

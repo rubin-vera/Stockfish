@@ -163,9 +163,9 @@ void update_all_stats(const Position& pos,
 // Detect shuffling moves in order to limit search explosions. This code was
 // added in #6447 as non-regression, and so its parameters should not be tuned.
 bool is_shuffling(Move move, Stack* const ss, const Position& pos) {
-    if (pos.capture_stage(move) || pos.rule50_count() < 10)
+    if (ss->ply < 20 || pos.rule50_count() < 10 || pos.state()->pliesFromNull < 6)
         return false;
-    if (pos.state()->pliesFromNull < 6 || ss->ply < 20)
+    if (pos.capture_stage(move))
         return false;
     return move.from_sq() == (ss - 2)->currentMove.to_sq()
         && (ss - 2)->currentMove.from_sq() == (ss - 4)->currentMove.to_sq();

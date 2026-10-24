@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 14,
+  "branch": "bench/b05-14-nnz-empty-block",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Skip NNZ compaction and stores for empty blocks",
+  "hypothesis": "Keep index progression but avoid compress and scratch traffic when all 32 chunks are zero.",
+  "area": "nnue-nnz",
+  "source_paths": [
+    "src/nnue/nnz_helper.h"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

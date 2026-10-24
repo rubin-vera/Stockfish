@@ -130,7 +130,11 @@ struct alignas(32) DualMagic {
         const __m256i rookBishop =
           _mm256_or_si256(result, _mm256_permute4x64_epi64(result, _MM_SHUFFLE(3, 1, 2, 0)));
 
+#if defined(USE_PEXT)
+        Bitboard rowOccupancy = rankAttacksLookup[_pext_u64(occupied, 0x7eULL << shift)];
+#else
         Bitboard rowOccupancy = rankAttacksLookup[(occupied >> (shift + 1)) & 0x3f];
+#endif
         Bitboard rankAttacks  = rowOccupancy << shift;
 
         // [bishop, rook]

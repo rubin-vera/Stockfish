@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 23,
+  "branch": "bench/b05-23-psq-empty-half",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Skip empty sides of cached PSQ index generation",
+  "hypothesis": "Avoid a board load, two compressions and an output store when an index list has no entries.",
+  "area": "nnue-psq-indices",
+  "source_paths": [
+    "src/nnue/features/k32q2.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

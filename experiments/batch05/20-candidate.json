@@ -1,0 +1,20 @@
+{
+  "batch": "b05",
+  "candidate": 20,
+  "branch": "bench/b05-20-next-dirties-prefetch",
+  "base_commit": "dbe600b7438662e9ade60b31fa0625259dcd0077",
+  "title": "Prefetch the next accumulator dirty record for writing",
+  "hypothesis": "Request ownership of the next stack dirty header before descending another search ply.",
+  "area": "nnue-stack-push",
+  "source_paths": [
+    "src/nnue/nnue_accumulator.cpp"
+  ],
+  "ready_for_vm_benchmark": true,
+  "performance_status": "unmeasured",
+  "local_validation": {
+    "build": "not_run_at_user_request",
+    "correctness": "not_run_at_user_request"
+  },
+  "intended_change": "non-functional",
+  "expected_default_bench": 1559611
+}

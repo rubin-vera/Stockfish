@@ -82,6 +82,8 @@ void AccumulatorStack::reset() noexcept {
 Dirties& AccumulatorStack::push() noexcept {
     assert(size < MaxSize);
     auto& st = accumulators[size];
+    if (size + 1 < MaxSize)
+        prefetch<PrefetchRw::WRITE, PrefetchLoc::HIGH>(&accumulators[size + 1].dirtyPiece);
     st.computed.fill(false);
     new (&st.dirtyThreats) DirtyThreats;
     new (&st.dirtyPawnPairs) DirtyPawnPairs;

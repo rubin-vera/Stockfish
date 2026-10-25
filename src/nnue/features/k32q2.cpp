@@ -47,9 +47,6 @@ void K32Q2::write_indices(const std::array<Piece, SQUARE_NB>& oldPieces,
     auto* write_removed = removed.make_space(popcount(removedBB));
     auto* write_added   = added.make_space(popcount(addedBB));
 
-    const __m512i vecOldPieces = _mm512_loadu_si512(oldPieces.data());
-    const __m512i vecNewPieces = _mm512_loadu_si512(newPieces.data());
-
     // PieceSquareIndex, KingBuckets, and queen offset are multiples of 64, while s and orient
     // use only the low six bits. Therefore no carry crosses bit 6, and
     // (s ^ orient) + psi[pc] + bucket + queen == s ^ (psi[pc] + bucket + queen + orient),
@@ -62,23 +59,28 @@ void K32Q2::write_indices(const std::array<Piece, SQUARE_NB>& oldPieces,
     const __m512i psi_plus_offset = _mm512_add_epi16(
       psi, _mm512_set1_epi16(u16(KingBuckets[int(ksq) ^ flip] + queenOffset + orient)));
 
-    __m512i removed_squares = _mm512_maskz_compress_epi8(removedBB, AllSquares);
-    __m512i added_squares   = _mm512_maskz_compress_epi8(addedBB, AllSquares);
-    __m512i removed_pieces  = _mm512_maskz_compress_epi8(removedBB, vecOldPieces);
-    __m512i added_pieces    = _mm512_maskz_compress_epi8(addedBB, vecNewPieces);
-
-    removed_squares = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(removed_squares));
-    added_squares   = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(added_squares));
-    removed_pieces  = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(removed_pieces));
-    added_pieces    = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(added_pieces));
-
-    const __m512i removed_indices =
-      _mm512_xor_si512(removed_squares, _mm512_permutexvar_epi16(removed_pieces, psi_plus_offset));
-    const __m512i added_indices =
-      _mm512_xor_si512(added_squares, _mm512_permutexvar_epi16(added_pieces, psi_plus_offset));
-
-    _mm512_storeu_si512(write_removed, removed_indices);
-    _mm512_storeu_si512(write_added, added_indices);
+    if (removedBB)
+    {
+        const __m512i board = _mm512_loadu_si512(oldPieces.data());
+        const __m512i squares8 = _mm512_maskz_compress_epi8(removedBB, AllSquares);
+        const __m512i pieces8 = _mm512_maskz_compress_epi8(removedBB, board);
+        const __m512i squares16 = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(squares8));
+        const __m512i pieces16 = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(pieces8));
+        const __m512i indices = _mm512_xor_si512(
+          squares16, _mm512_permutexvar_epi16(pieces16, psi_plus_offset));
+        _mm512_storeu_si512(write_removed, indices);
+    }
+    if (addedBB)
+    {
+        const __m512i board = _mm512_loadu_si512(newPieces.data());
+        const __m512i squares8 = _mm512_maskz_compress_epi8(addedBB, AllSquares);
+        const __m512i pieces8 = _mm512_maskz_compress_epi8(addedBB, board);
+        const __m512i squares16 = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(squares8));
+        const __m512i pieces16 = _mm512_cvtepi8_epi16(_mm512_castsi512_si256(pieces8));
+        const __m512i indices = _mm512_xor_si512(
+          squares16, _mm512_permutexvar_epi16(pieces16, psi_plus_offset));
+        _mm512_storeu_si512(write_added, indices);
+    }
 }
 #endif
 

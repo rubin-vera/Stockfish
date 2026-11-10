@@ -168,6 +168,7 @@ class Position {
     bool  is_chess960() const;
     bool  is_draw(int ply) const;
     bool  is_repetition(int ply) const;
+    void  set_analysis_avoid_repetition(bool enabled) { analysisAvoidRepetition = enabled; }
     bool  upcoming_repetition(int ply) const;
     bool  has_repeated() const;
     int   rule50_count() const;
@@ -226,6 +227,7 @@ class Position {
     int        gamePly;
     Color      sideToMove;
     bool       chess960;
+    bool       analysisAvoidRepetition;
     Dirties    scratchDirties;
 };
 

@@ -228,6 +228,27 @@ class TestInteractive(metaclass=OrderedClassMembers):
     def test_set_threads_option(self):
         self.stockfish.send_command(f"setoption name Threads value {get_threads()}")
 
+    def test_analysis_avoid_repetition(self):
+        # Returning to the supplied historical position is only a twofold draw
+        # in analysis mode. Toggle back without ucinewgame to test cache clearing.
+        for enabled in (False, True, False):
+            self.stockfish.send_command(
+                f"setoption name AnalysisAvoidRepetition value {str(enabled).lower()}"
+            )
+            self.stockfish.send_command(
+                "position fen 7k/8/8/8/8/8/Q7/K7 w - - 0 1 moves a2b2 h8g8 b2a2"
+            )
+            self.stockfish.send_command("go depth 10 searchmoves g8h8")
+            self.stockfish.starts_with("bestmove")
+            scores = [line for line in self.stockfish.get_output() if " score " in line]
+            fields = scores[-1].split()
+            index = fields.index("score")
+            kind, value = fields[index + 1], int(fields[index + 2])
+            if enabled:
+                assert kind == "cp" and abs(value) <= 2
+            else:
+                assert value < 0
+
     def test_ucinewgame_and_startpos_nodes_1000(self):
         self.stockfish.send_command("ucinewgame")
         self.stockfish.send_command("position startpos")

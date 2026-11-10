@@ -1914,7 +1914,8 @@ Config Tablebases::rank_root_moves(const OptionsMap&            options,
     config.rootInTB    = false;
     config.useRule50   = bool(options["Syzygy50MoveRule"]);
     config.probeDepth  = int(options["SyzygyProbeDepth"]);
-    config.cardinality = int(options["SyzygyProbeLimit"]);
+    // Tablebase outcomes assume the normal repetition rule.
+    config.cardinality = options["AnalysisAvoidRepetition"] ? 0 : int(options["SyzygyProbeLimit"]);
 
     bool dtz_available = true;
 

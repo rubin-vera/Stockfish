@@ -120,6 +120,11 @@ Engine::Engine(std::optional<std::filesystem::path> path) :
 
     options.add("UCI_ShowWDL", Option(false));
 
+    options.add("AnalysisAvoidRepetition", Option(false, [this](const Option&) {
+        search_clear();
+        return std::nullopt;
+    }));
+
     options.add(  //
       "SyzygyPath", Option("", [](const Option& o) {
           Tablebases::init(o);

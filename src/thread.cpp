@@ -338,6 +338,7 @@ void ThreadPool::start_thinking(const OptionsMap&  options,
             th->worker->rootDepth                                                = 0;
             th->worker->rootMoves                                                = rootMoves;
             th->worker->rootPos.set(pos.fen(), pos.is_chess960(), &th->worker->rootState);
+            th->worker->rootPos.set_analysis_avoid_repetition(options["AnalysisAvoidRepetition"]);
             th->worker->rootState = setupStates->back();
             th->worker->tbConfig  = tbConfig;
         });

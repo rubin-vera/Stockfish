@@ -1460,7 +1460,10 @@ bool Position::is_draw(int ply) const {
 
 // Return a draw score if a position repeats once earlier but strictly
 // after the root, or repeats twice before or at the root.
-bool Position::is_repetition(int ply) const { return st->repetition && st->repetition < ply; }
+// Analysis can optionally treat any second occurrence as a draw.
+bool Position::is_repetition(int ply) const {
+    return st->repetition && (analysisAvoidRepetition || st->repetition < ply);
+}
 
 // Tests whether there has been at least one repetition
 // of positions since the last capture or pawn move.
@@ -1511,7 +1514,8 @@ bool Position::upcoming_repetition(int ply) const {
 
             // For nodes before or at the root, check that the move is a
             // repetition rather than a move to the current position.
-            if (!((between_bb(s1, s2) ^ s2) & pieces()) && (ply > i || stp->repetition))
+            if (!((between_bb(s1, s2) ^ s2) & pieces())
+                && (analysisAvoidRepetition || ply > i || stp->repetition))
                 return true;
         }
     }
